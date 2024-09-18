@@ -9,6 +9,17 @@ keymap.set({ "n", "i", "v" }, "<down>", "<nop>")
 keymap.set({ "n", "i", "v" }, "<left>", "<nop>")
 keymap.set({ "n", "i", "v" }, "<right>", "<nop>")
 
+-- Delete word
+keymap.set("n", "dw", "bde")
+
+-- Increment/Decrement
+keymap.set("n", "+", "<C-a>")
+keymap.set("n", "-", "<C-x>")
+
+-- Quickfix navigation
+keymap.set("n", "[q", "<cmd>cprevious<CR>", { desc = "Previous Quickfix" })
+keymap.set("n", "]q", "<cmd>cnext<CR>", { desc = "Next Quickfix" })
+
 keymap.set("i", "jk", "<ESC>", { desc = "Exit insert mode with jk" })
 
 keymap.set("n", "<ESC>", ":nohl<CR>", { desc = "Clear search highlights" })
