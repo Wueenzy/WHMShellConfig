@@ -89,10 +89,10 @@ do
 	keymap.set("n", "<leader>ss", "<C-w>s", { desc = "Split window horizontally" })
 	keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
 	-- keymap.set('n', '<leader>sm', '<C-w>_', { desc = 'Maximize current split' }) -- Vim-Maximizer already done that
-	keymap.set("n", "<leader>sk", "<cmd>resize -2<CR>", { desc = "Decrease window hight" })
-	keymap.set("n", "<leader>sj", "<cmd>resize -2<CR>", { desc = "Increase window hight" })
-	keymap.set("n", "<leader>sl", "<cmd>vertical resize +2<CR>", { desc = "Increase window width" })
-	keymap.set("n", "<leader>sh", "<cmd>vertical resize -2<CR>", { desc = "Decrease window width" })
+	keymap.set("n", "<leader>sk", "0<C-w>-", { desc = "Decrease window hight" })
+	keymap.set("n", "<leader>sj", "0<C-w>+", { desc = "Increase window hight" })
+	keymap.set("n", "<leader>sl", "0<C-w>>", { desc = "Increase window width" })
+	keymap.set("n", "<leader>sh", "0<C-w><", { desc = "Decrease window width" })
 	keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 
 	for _, key in ipairs({ "h", "j", "k", "l" }) do
