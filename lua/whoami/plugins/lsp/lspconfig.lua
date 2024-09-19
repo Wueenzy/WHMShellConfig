@@ -6,6 +6,22 @@ return {
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 		{ "folke/neodev.nvim", opts = {} },
 	},
+	opts = {
+		diagnostics = {
+			underline = true,
+			update_in_insert = false,
+			severity_sort = true,
+			virtual_text = {
+				spacing = 4,
+				source = "if_many",
+				prefix = "●",
+			},
+		},
+		-- Enable lsp cursor word highlighting
+		document_highlight = {
+			enabled = true,
+		},
+	},
 	config = function()
 		-- import lspconfig plugin
 		local lspconfig = require("lspconfig")
