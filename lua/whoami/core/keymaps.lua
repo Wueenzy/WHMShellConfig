@@ -110,3 +110,21 @@ do
 	keymap.set("n", "<TAB>", "<cmd>tabn<CR>", { desc = "Goto next tab" })
 	keymap.set("n", "<S-TAB>", "<cmd>tabp<CR>", { desc = "Goto previous tab" })
 end
+
+-- diagnostic
+do
+	local diagnostic_goto = function(next, severity)
+		local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
+		severity = severity and vim.diagnostic.severity[severity] or nil
+		return function()
+			go({ severity = severity })
+		end
+	end
+	keymap.set("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+	keymap.set("n", "]d", diagnostic_goto(true), { desc = "Next Diagnostic" })
+	keymap.set("n", "[d", diagnostic_goto(false), { desc = "Prev Diagnostic" })
+	keymap.set("n", "]e", diagnostic_goto(true, "ERROR"), { desc = "Next Error" })
+	keymap.set("n", "[e", diagnostic_goto(false, "ERROR"), { desc = "Prev Error" })
+	keymap.set("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
+	keymap.set("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
+end
