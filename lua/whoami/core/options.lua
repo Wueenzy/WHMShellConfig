@@ -1,5 +1,5 @@
-local utils = require('whoami.utils')
-vim.cmd('let g:netrw_liststyle = 3') -- built-in neovim file explorer
+local utils = require("whoami.utils")
+vim.cmd("let g:netrw_liststyle = 3") -- built-in neovim file explorer
 
 local opt = vim.opt
 
@@ -24,12 +24,22 @@ opt.cursorline = true
 -- (have to use iterm2 or any other true color terminal)
 opt.termguicolors = true
 opt.background = utils.appearance() -- automaticlly detect appearance
-opt.signcolumn = 'yes' -- show sign column so that text doesn't shift
+opt.signcolumn = "yes" -- show sign column so that text doesn't shift
 
 --backspace
-opt.backspace = 'indent,eol,start'
+opt.backspace = "indent,eol,start"
 
 -- split windows
 
 opt.splitright = true -- split vertical window to the right
 opt.splitbelow = true -- split horizontal window to the bottom
+
+-- folds
+opt.fillchars = {
+	foldopen = "",
+	foldclose = "",
+	fold = " ",
+	foldsep = " ",
+	diff = "╱",
+	eob = " ",
+}

@@ -1,7 +1,7 @@
 local utils = require("whoami.utils")
-vim.g.mapleader = " "
-
 local keymap = vim.keymap -- for conciseness
+
+vim.g.mapleader = " "
 
 -- Never use arrow keys :p
 keymap.set({ "n", "i", "v" }, "<up>", "<nop>")
@@ -64,6 +64,7 @@ do
 	keymap.set("n", "<leader>bn", "<cmd>enew<CR>", { desc = "Create new buffer" })
 end
 
+-- Quit
 do
 	keymap.set("n", "<leader>qq", "<cmd>qall!<CR>", { desc = "Quit from Neovim" })
 	keymap.set("n", "<leader>qw", "<cmd>:wqall!<CR>", { desc = "Save files and quit" })
@@ -71,17 +72,37 @@ end
 
 keymap.set("n", "<leader>p", "<cmd>Lazy<CR>", { desc = "Plugin Manager" })
 
-keymap.set("n", "<leader><space>", "za", { desc = "Toggle fold" })
-
-keymap.set("n", "<leader>r", function()
-	require("lualine").hide({ place = { "statusline", "tabline", "winbar" }, unhide = false })
-	vim.cmd("Lazy reload lualine.nvim")
-	if utils.appearance() == "dark" then
-		vim.cmd("Lazy reload tokyonight.nvim")
-	else
-		vim.cmd("Lazy reload catppuccin")
+-- Toggles
+do
+	local function toggle(option, values)
+		return function()
+			utils.opt.toggle(option, values)
+		end
 	end
-end, { desc = "Reload theme options" })
+	keymap.set("n", "<leader>uw", toggle("wrap"), { desc = "Toggle wrap" })
+	keymap.set("n", "<leader>un", toggle("number"), { desc = "Toggle number" })
+	keymap.set("n", "<leader>uN", toggle("relativenumber"), { desc = "Toggle relative number" })
+	keymap.set("n", "<leader>ub", toggle("background", { "light", "dark" }), { desc = "Toggle background color" })
+	keymap.set("n", "<leader>ut", function()
+		local color_scheme = vim.g.colors_name or ""
+		if color_scheme:find("^catppuccin") then
+			vim.cmd([[colorscheme tokyonight]])
+		else
+			vim.cmd([[colorscheme catppuccin]])
+		end
+	end, { desc = "Toggle theme" })
+	keymap.set("n", "<leader><space>", "za", { desc = "Toggle fold" })
+end
+
+-- keymap.set("n", "<leader>r", function()
+-- 	require("lualine").hide({ place = { "statusline", "tabline", "winbar" }, unhide = false })
+-- 	vim.cmd("Lazy reload lualine.nvim")
+-- 	if utils.appearance() == "dark" then
+-- 		vim.cmd("Lazy reload tokyonight.nvim")
+-- 	else
+-- 		vim.cmd("Lazy reload catppuccin")
+-- 	end
+-- end, { desc = "Reload theme options" })
 
 -- window management
 do
