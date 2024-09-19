@@ -29,7 +29,7 @@ return {
 				opts.desc = "Show LSP references"
 				keymap.set("n", "<leader>lR", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
 
-				opts.desc = "Go to declaration"
+				opts.desc = "Goto declaration"
 				keymap.set("n", "<leader>lcD", vim.lsp.buf.declaration, opts) -- go to declaration
 
 				opts.desc = "Show LSP definitions"
@@ -53,14 +53,18 @@ return {
 				opts.desc = "Show line diagnostics"
 				keymap.set("n", "<leader>ld", vim.diagnostic.open_float, opts) -- show diagnostics for line
 
-				opts.desc = "Go to previous diagnostic"
+				opts.desc = "Goto previous diagnostic"
 				keymap.set("n", "[d", vim.diagnostic.goto_prev, opts) -- jump to previous diagnostic in buffer
 
-				opts.desc = "Go to next diagnostic"
+				opts.desc = "Goto next diagnostic"
 				keymap.set("n", "]d", vim.diagnostic.goto_next, opts) -- jump to next diagnostic in buffer
 
 				opts.desc = "Show documentation for what is under cursor"
 				keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
+
+				opts.desc = "Show signature help for what is under cursor"
+				keymap.set("i", "lk", vim.lsp.buf.signature_help, opts) -- show signature for what is under cursor
+				keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts) -- show signature for what is under cursor
 
 				opts.desc = "Restart LSP"
 				keymap.set("n", "<leader>lr", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
