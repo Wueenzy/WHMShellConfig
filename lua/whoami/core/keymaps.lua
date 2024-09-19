@@ -9,6 +9,33 @@ keymap.set({ "n", "i", "v" }, "<down>", "<nop>")
 keymap.set({ "n", "i", "v" }, "<left>", "<nop>")
 keymap.set({ "n", "i", "v" }, "<right>", "<nop>")
 
+-- better up/down
+keymap.set({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
+keymap.set({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
+keymap.set({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
+keymap.set({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
+
+-- Move Lines
+keymap.set("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move Down" })
+keymap.set("n", "<A-k>", "<cmd>m .-2<cr>==", { desc = "Move Up" })
+keymap.set("i", "<A-j>", "<esc><cmd>m .+1<cr>==gi", { desc = "Move Down" })
+keymap.set("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move Up" })
+keymap.set("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move Down" })
+keymap.set("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move Up" })
+
+-- Add undo break-points
+keymap.set("i", ",", ",<c-g>u")
+keymap.set("i", ".", ".<c-g>u")
+keymap.set("i", ";", ";<c-g>u")
+
+-- better indenting
+keymap.set("v", "<", "<gv")
+keymap.set("v", ">", ">gv")
+
+-- commenting
+keymap.set("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
+keymap.set("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Above" })
+
 -- Delete word
 keymap.set("n", "dw", "bde")
 
@@ -17,14 +44,25 @@ keymap.set("n", "+", "<C-a>")
 keymap.set("n", "-", "<C-x>")
 
 -- Quickfix navigation
-keymap.set("n", "[q", "<cmd>cprevious<CR>", { desc = "Previous Quickfix" })
-keymap.set("n", "]q", "<cmd>cnext<CR>", { desc = "Next Quickfix" })
+keymap.set("n", "[q", vim.cmd.cprev, { desc = "Previous Quickfix" })
+keymap.set("n", "]q", vim.cmd.cnext, { desc = "Next Quickfix" })
 
+-- Leave insert mode
 keymap.set("i", "jk", "<ESC>", { desc = "Exit insert mode with jk" })
 
-keymap.set("n", "<ESC>", ":nohl<CR>", { desc = "Clear search highlights" })
+-- Clear search with <esc>
+keymap.set({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and Clear hlsearch" })
 
-keymap.set("i", "<C-s>", "<ESC>:w<CR>i", { desc = "Save changes in insert mode" })
+-- Save current file
+keymap.set({ "i", "n", "x", "v" }, "<C-s>", "<cmd>w<CR><ESC>", { desc = "Save file" })
+
+-- buffers
+do
+	keymap.set("n", "[b", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
+	keymap.set("n", "]b", "<cmd>bnext<CR>", { desc = "Next buffer" })
+	keymap.set("n", "<leader>bx", "<cmd>bdelete<CR>", { desc = "Close current buffer" })
+	keymap.set("n", "<leader>bn", "<cmd>enew<CR>", { desc = "Create new buffer" })
+end
 
 do
 	keymap.set("n", "<leader>qq", "<cmd>qall!<CR>", { desc = "Quit from Neovim" })
@@ -32,8 +70,6 @@ do
 end
 
 keymap.set("n", "<leader>p", "<cmd>Lazy<CR>", { desc = "Plugin Manager" })
-
-keymap.set("n", "<leader>k", "<cmd>bdelete<CR>", { desc = "Kill current buffer" })
 
 keymap.set("n", "<leader><space>", "za", { desc = "Toggle fold" })
 
@@ -53,10 +89,10 @@ do
 	keymap.set("n", "<leader>ss", "<C-w>s", { desc = "Split window horizontally" })
 	keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
 	-- keymap.set('n', '<leader>sm', '<C-w>_', { desc = 'Maximize current split' }) -- Vim-Maximizer already done that
-	keymap.set("n", "<leader>sk", "<C-w>-", { desc = "Decrease split hight" })
-	keymap.set("n", "<leader>sj", "<C-w>+", { desc = "Increase split hight" })
-	keymap.set("n", "<leader>sl", "<C-w>>", { desc = "Increase split width" })
-	keymap.set("n", "<leader>sh", "<C-w><", { desc = "Decrease split width" })
+	keymap.set("n", "<leader>sk", "<cmd>resize -2<CR>", { desc = "Decrease window hight" })
+	keymap.set("n", "<leader>sj", "<cmd>resize -2<CR>", { desc = "Increase window hight" })
+	keymap.set("n", "<leader>sl", "<cmd>vertical resize +2<CR>", { desc = "Increase window width" })
+	keymap.set("n", "<leader>sh", "<cmd>vertical resize -2<CR>", { desc = "Decrease window width" })
 	keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 
 	for _, key in ipairs({ "h", "j", "k", "l" }) do
@@ -66,9 +102,11 @@ end
 
 -- Tab management
 do
-	keymap.set("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "Open new tab" })
+	keymap.set("n", "<leader>tn", "<cmd>tabnew<CR>", { desc = "Open new tab" })
 	keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" })
 	keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" })
-	keymap.set("n", "<TAB>", "<cmd>tabn<CR>", { desc = "Go to next tab" })
-	keymap.set("n", "<S-TAB>", "<cmd>tabp<CR>", { desc = "Go to previous tab" })
+	keymap.set("n", "<leader>to", "<cmd>tabonly<CR>", { desc = "Close other tabs" })
+	keymap.set("n", "<leader>tl", "<cmd>tablast<CR>", { desc = "Goto last tab" })
+	keymap.set("n", "<TAB>", "<cmd>tabn<CR>", { desc = "Goto next tab" })
+	keymap.set("n", "<S-TAB>", "<cmd>tabp<CR>", { desc = "Goto previous tab" })
 end
