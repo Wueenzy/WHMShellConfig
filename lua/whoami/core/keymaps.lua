@@ -141,7 +141,6 @@ do
 			go({ severity = severity })
 		end
 	end
-	keymap.set("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 	keymap.set("n", "]d", diagnostic_goto(true), { desc = "Next Diagnostic" })
 	keymap.set("n", "[d", diagnostic_goto(false), { desc = "Prev Diagnostic" })
 	keymap.set("n", "]e", diagnostic_goto(true, "ERROR"), { desc = "Next Error" })
