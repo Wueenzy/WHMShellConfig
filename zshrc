@@ -121,13 +121,10 @@ source $ZSH/oh-my-zsh.sh
 #
 # Example aliases
 # alias ohmyzsh="vim ~/.oh-my-zsh"
-alias zshconfig='nvim ~/.zshrc'
-alias vimconfig='nvim ~/.vimrc'
-alias weztermconfig='cd ~/.config/wezterm; nvim ~/.wezterm.lua'
-alias nvimconfig='cd ~/.config/nvim && nvim'
-alias ls='eza --icons=always --git --octal-permissions'
+alias shellconfig="cd ~/.whm_shell/ && nvim"
 alias reload='exec "$SHELL"'
 
+alias ls='eza --icons=always --git --octal-permissions'
 eval "$(zoxide init zsh)"
 alias cd='z'
 #
