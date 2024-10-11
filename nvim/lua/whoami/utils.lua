@@ -3,11 +3,32 @@ local opt = vim.opt
 local M = {}
 M.opt = {}
 
+do
+	local BinaryFormat = package.cpath:match("%p[\\|/]?%p(%a+)")
+	if BinaryFormat == "dll" then
+		function os.name()
+			return "win"
+		end
+	elseif BinaryFormat == "so" then
+		function os.name()
+			return "linux"
+		end
+	elseif BinaryFormat == "dylib" then
+		function os.name()
+			return "darwin"
+		end
+	end
+	BinaryFormat = nil
+end
+
 function M.appearance()
-	local handle = assert(io.popen("defaults read -g AppleInterfaceStyle 2>&1", "r"))
-	local result = assert(handle:read("*a"))
-	handle:close()
-	return result:find("^Dark") and "dark" or "light"
+	if os.name() == "darwin" then
+		local handle = assert(io.popen("defaults read -g AppleInterfaceStyle 2>&1", "r"))
+		local result = assert(handle:read("*a"))
+		handle:close()
+		return result:find("^Dark") and "dark" or "light"
+	end
+	return "dark"
 end
 
 function M.opt.has(option)
