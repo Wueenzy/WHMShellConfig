@@ -1,24 +1,24 @@
 #!/bin/bash
-WHMCONFIG="$HOME/.whm_shell";
+WHMCONFIG="$HOME/.whm_shell"
 
 # functions
 
 lnif ()
 {
-  local dst="${@: -1}";
+  local dst="${@: -1}"
   if ! [[ -e "$dst" ]]; then
-    ln $@;
+    ln $@
   fi
 }
 
 ensure ()
 {
-  local program="$(command -v $1)";
+  local program="$(command -v $1)"
   if ! [ -x "$program" ]; then
-    echo "[-] Error: $1 is not installed." >&2;
-    return 1;
+    echo "[-] Error: $1 is not installed." >&2
+    return 1
   fi
-  return 0;
+  return 0
 }
 
 ensure-all ()
@@ -26,18 +26,18 @@ ensure-all ()
   for program in "$@"
   do
     if ! ensure $program; then
-      return 1;
+      return 1
     fi
   done
 }
 
 safe-run () # run or quit
 {
-  local program=$1; shift;
+  local program=$1 shift
   if ! ensure $program;  then
-    exit 1;
+    exit 1
   fi
-  $program $@;
+  $program $@
 }
 
 if ! [[ -d "$WHMCONFIG" ]]; then
@@ -45,6 +45,11 @@ if ! [[ -d "$WHMCONFIG" ]]; then
 fi
 
 # Link files
+if ensure tmux; then
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  lnif -s "$WHMCONFIG/tmux.conf" "$HOME/.tmux.conf"
+fi
+
 if ensure-all zsh fd eza zoxide fzf bat; then
   lnif -s "$WHMCONFIG/myshell" "$HOME/.myshell"
   lnif -s "$WHMCONFIG/zshrc" "$HOME/.zshrc" 
@@ -61,8 +66,8 @@ else
 fi
 
 if ensure-all nvim rg; then
-  mkdir -p "$HOME/.config";
-  lnif -s "$WHMCONFIG/nvim" "$HOME/.config/nvim";
+  mkdir -p "$HOME/.config"
+  lnif -s "$WHMCONFIG/nvim" "$HOME/.config/nvim"
 else
   echo "[-] nvim config is not linked."
 fi
