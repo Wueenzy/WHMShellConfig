@@ -146,7 +146,7 @@ if confirm "Do you want install required tools?"; then
 fi
 
 if ensure-all zsh fd eza zoxide fzf bat; then
-  lnif -s "$WHMCONFIG/myshell" "$HOME/.myshell"
+  lnif -s "$WHMCONFIG/myshell.sh" "$HOME/.myshell.sh"
   lnif -s "$WHMCONFIG/zshrc" "$HOME/.zshrc" 
   if ! [[ -z "$HOME/.oh-my-zsh" ]];then
     zsh_install_file="$(mktemp)"
@@ -157,6 +157,15 @@ if ensure-all zsh fd eza zoxide fzf bat; then
     $zsh_install_file --keep-zshrc
     rm $zsh_install_file
   fi
+  
+  # installing zsh-syntax-highlighting
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+  # installing zsh-autosuggestions
+  git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
+  # installing zsh-vi-mode
+  git clone https://github.com/jeffreytse/zsh-vi-mode ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vi-mode
 else
   echo "[-] zsh config is not linked."
 fi

@@ -1,5 +1,24 @@
 # Include my shell configuration
-source /Users/whoami/.myshell
+source "$HOME/.myshell.sh"
+get_ostype ()
+{
+  case "$OSTYPE" in
+    "darwin"*) echo "darwin"
+    ;;
+    *) echo "linux"
+    ;;
+  esac
+}
+
+is_dark ()
+{
+  if [[ "$(get_ostype)" == "darwin" ]]; then
+    defaults read -globalDomain AppleInterfaceStyle | grep -qE '^Dark'
+    return $? # 1 => light, 0 => dark
+  else
+    return 0
+  fi
+}
 
 # Load zsh-vi-mode plugin
 function zvm_config() {
@@ -7,7 +26,6 @@ function zvm_config() {
   ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
 }
 
-source $(brew --prefix)/opt/zsh-vi-mode/share/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -94,6 +112,7 @@ plugins=(
   git
   zsh-syntax-highlighting
   zsh-autosuggestions
+  zsh-vi-mode
  ssh gh docker pyenv)
 source $ZSH/oh-my-zsh.sh
 
@@ -121,6 +140,11 @@ source $ZSH/oh-my-zsh.sh
 #
 # Example aliases
 # alias ohmyzsh="vim ~/.oh-my-zsh"
+
+# Change keyboard layout
+alias trkb="setxkbmap tr"
+alias uskb="setxkbmap us"
+
 alias shellconfig="cd ~/.whm_shell/ && nvim"
 alias reload='exec "$SHELL"'
 
@@ -129,15 +153,14 @@ eval "$(zoxide init zsh)"
 alias cd='z'
 #
 # Configure bat 
-alias bat='bat --theme="$(defaults read -globalDomain AppleInterfaceStyle &> /dev/null && echo Catppuccin Mocha || echo Catppuccin Latte)"'
+alias bat='bat --theme="$(is_dark && echo Catppuccin Mocha || echo Catppuccin Latte)"'
 alias -g -- --help='--help 2>&1 | bat --language=help --style=plain'
 alias -g -- -help='-h 2>&1 | bat --language=help --style=plain'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-export PATH="/usr/local/opt/mysql-client/bin:/Users/whoami/.gem/ruby/2.6.0/bin:$PATH"
 
-source /Users/whoami/.copilot_alias
+source "$HOME/.copilot_alias"
 
 export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"
 
@@ -153,7 +176,7 @@ export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
 
-show_file_or_dir_preview='if [ -d {} ]; then eza --tree --color=always {} | head -300; else bat --theme="$(defaults read -globalDomain AppleInterfaceStyle &> /dev/null && echo Catppuccin Mocha || echo Catppuccin Latte)" -n --color=always --line-range :500 {}; fi'
+show_file_or_dir_preview='if [ -d {} ]; then eza --tree --color=always {} | head -300; else bat --theme="$(is_dark && echo Catppuccin Mocha || echo Catppuccin Latte)" -n --color=always --line-range :500 {}; fi'
 
 # -- Use eza and bat for file preview
 export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
