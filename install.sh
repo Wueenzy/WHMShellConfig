@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e  # Exit immediately if any command returns a non-zero status
+# set -e  # Exit immediately if any command returns a non-zero status
 
 USER=${USER:-$(id -u -n)}
 # $HOME is defined at the time of login, but it could be unset. If it is unset,
@@ -24,10 +24,15 @@ lnif ()
   fi
 }
 
-ensure ()
+check_exist()
 {
   local program="$(command -v $1)"
-  if ! [ -x "$program" ]; then
+  return [ -x "$program" ]
+}
+
+ensure ()
+{
+  if ! check_exist "$1"; then
     echo "[-] Error: $1 is not installed." >&2
     return 1
   fi
@@ -44,6 +49,48 @@ ensure-all ()
   done
 }
 
+confirm ()
+{
+  read -p "$1 (y/n): " choice
+  case "$choice" in
+    [Yy]* ) return 0;;
+    *) echo "Operation cancelled."; return 1;;
+}
+
+install_package ()
+{
+  local package="$1"
+
+  case "$OSTYPE" in
+    "linux-gnu"*)
+      if check_exist apt; then
+        sudo apt update && sudo apt install -y "$package"
+      elif check_exist yum; then
+        sudo yum install -y "$package"
+      elif check_exist dnf; then
+        sudo dnf install -y "$package"
+      elif check_exist pacman; then
+        sudo pacman -Syu --noconfirm "$package"
+      else
+        echo "No supported package maanger found. Unable to install $package."
+      fi
+      ;;
+    "darwin"*)
+      if check_exist brew; then
+        brew install "$package"
+      else
+        echo "Homebrew is not installed. Please install Homebrew to use this function on macOS"
+        return 1
+      fi
+      ;;
+    *)
+      echo "Unsupported OS: $OSTYPE"
+      return 1
+      ;;
+  esac
+  return $?;
+}
+
 
 ensure-all git wget || exit 1;
 
@@ -58,12 +105,54 @@ if ensure tmux; then
   lnif -s "$WHMCONFIG/tmux.conf" "$HOME/.tmux.conf"
 fi
 
+if confirm "Do you want install required tools?"; then
+  # zsh
+  echo "Installing zsh..."
+  install_package zsh
+
+  # fzf
+  echo "Installing fzf..."
+  install_package fzf
+
+  # zoxide
+  echo "Installing zoxide...";
+  curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+
+  # fd
+  echo "Installing fd"
+  install_package fd || install_package fd-find
+
+  # eza
+  echo "Installing eza"
+  if [[ "$OSTYPE" == "linux-gnu"* && $(check_exist apt) ]]; then
+    sudo apt update
+    sudo apt install -y gpg
+
+    sudo mkdir -p /etc/apt/keyrings
+    wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+    sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+    sudo apt update
+    sudo apt install -y eza
+  else
+    install_package eza
+  fi
+
+  # bat
+  echo "Installing bat"
+  install_package bat
+  lnif -s "$WHMCONFIG/bat-cache" "$HOME/.cache/bat"
+  lnif -s "$WHMCONFIG/bat-config" "$HOME/.config/bat"
+fi
+
 if ensure-all zsh fd eza zoxide fzf bat; then
   lnif -s "$WHMCONFIG/myshell" "$HOME/.myshell"
   lnif -s "$WHMCONFIG/zshrc" "$HOME/.zshrc" 
   if ! [[ -z "$HOME/.oh-my-zsh" ]];then
     zsh_install_file="$(mktemp)"
     wget -O $zsh_install_file "https://install.ohmyz.sh/"
+    sed -i'.tmp' 's/env zsh//g' $zsh_install_file
+    sed -i'.tmp' 's/chsh -s .*$//gk' $zsh_install_file
     chmod u+x $zsh_install_file
     $zsh_install_file --keep-zshrc
     rm $zsh_install_file
