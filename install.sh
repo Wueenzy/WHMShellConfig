@@ -27,7 +27,8 @@ lnif ()
 check_exist()
 {
   local program="$(command -v $1)"
-  return [ -x "$program" ]
+  test -x "$program"
+  return $?
 }
 
 ensure ()
@@ -55,6 +56,7 @@ confirm ()
   case "$choice" in
     [Yy]* ) return 0;;
     *) echo "Operation cancelled."; return 1;;
+  esac
 }
 
 install_package ()
@@ -151,10 +153,8 @@ if ensure-all zsh fd eza zoxide fzf bat; then
   if ! [[ -z "$HOME/.oh-my-zsh" ]];then
     zsh_install_file="$(mktemp)"
     wget -O $zsh_install_file "https://install.ohmyz.sh/"
-    sed -i'.tmp' 's/env zsh//g' $zsh_install_file
-    sed -i'.tmp' 's/chsh -s .*$//gk' $zsh_install_file
     chmod u+x $zsh_install_file
-    $zsh_install_file --keep-zshrc
+    $zsh_install_file --keep-zshrc --skip-chsh --unattended
     rm $zsh_install_file
   fi
   
