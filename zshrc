@@ -145,7 +145,7 @@ source $ZSH/oh-my-zsh.sh
 alias trkb="setxkbmap tr"
 alias uskb="setxkbmap us"
 
-alias shellconfig="cd ~/.whm_shell/ && nvim"
+alias shellconfig="cd ~/.whm_shell/ && nvim && cd -"
 alias reload='exec "$SHELL"'
 
 alias ls='eza --icons=always --git --octal-permissions'
